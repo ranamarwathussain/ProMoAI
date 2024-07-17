@@ -141,7 +141,9 @@ def create_model_generation_prompt(process_description: str) -> str:
     prompt = prompt + self_evaluation()
     prompt = prompt + add_few_shots()
     prompt = prompt + code_generation()
-    prompt = prompt + add_process_description(process_description)
+
+    if process_description is not None:
+        prompt = prompt + add_process_description(process_description)
 
     return prompt
 

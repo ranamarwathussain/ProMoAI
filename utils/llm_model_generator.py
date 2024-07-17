@@ -1,19 +1,28 @@
 from utils.prompting import create_conversation, update_conversation
-from utils.model_generation.model_generation import generate_model
+from utils.model_generation.model_generation import generate_model, extract_model_from_response
 from pm4py.util import constants
 
 
 class LLMProcessModelGenerator(object):
     def __init__(self, process_description: str, api_key: str,
-                 openai_model: str = "gpt-3.5-turbo-0125", api_url: str = "https://api.openai.com/v1"):  # gpt-4-0125-preview gpt-3.5-turbo-0125
+                 openai_model: str = "gpt-3.5-turbo-0125", api_url: str = "https://api.openai.com/v1", powl_model_code: str = None):
         self.__api_url = api_url
         self.__api_key = api_key
         self.__openai_model = openai_model
         init_conversation = create_conversation(process_description)
-        self.__process_model, self.__conversation = generate_model(init_conversation,
-                                                                   api_key=self.__api_key,
-                                                                   openai_model=self.__openai_model,
-                                                                   api_url=self.__api_url)
+        if process_description is not None:
+            self.__process_model, self.__conversation = generate_model(init_conversation,
+                                                                       api_key=self.__api_key,
+                                                                       openai_model=self.__openai_model,
+                                                                       api_url=self.__api_url)
+        elif powl_model_code:
+            process_model = extract_model_from_response(powl_model_code, 0)
+            conversation = list(init_conversation)
+            conversation.append({"role": "assistant", "content": "The following code is used to generate the process model:\n\n"+powl_model_code})
+            self.__process_model = process_model
+            self.__conversation = conversation
+        else:
+            raise Exception("insufficient parameters provided to LLMProcessModelGenerator. at least one between 'process_description' and 'powl_model_code' should be provided.")
 
     def __to_petri_net(self):
         from pm4py.objects.conversion.powl.converter import apply as powl_to_pn
