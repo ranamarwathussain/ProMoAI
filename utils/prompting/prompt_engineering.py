@@ -151,7 +151,6 @@ def create_model_generation_prompt(process_description: str) -> str:
 def create_conversation(process_description: str) -> List[dict[str:str]]:
     prompt = create_model_generation_prompt(process_description)
     conversation = [{"role": "user", "content": f'{prompt}'}]
-    print(prompt)
     return conversation
 
 
@@ -161,5 +160,4 @@ def update_conversation(conversation: List[dict[str:str]], feedback: str) -> Lis
                     "feedback comment as well. Make sure to save the updated final model is the variable" \
                     " 'final_model'. This is the new feedback comment:" + feedback
     conversation.append({"role": "user", "content": f'{update_prompt}'})
-    print(update_prompt)
     return conversation

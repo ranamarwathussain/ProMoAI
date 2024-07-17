@@ -12,13 +12,18 @@ def generate_result_with_error_handling(conversation: List[dict[str:str]],
                                         max_iterations=5) \
         -> tuple[T, List[dict[str:str]]]:
     error_history = []
+
+    print_conversation(conversation)
+
     for iteration in range(max_iterations):
         response = generate_response_with_history(conversation, api_key, openai_model, api_url)
 
         try:
             conversation.append({"role": "system", "content": response})
-            print(response)
             result = extraction_function(response, iteration)
+
+            print_conversation(conversation)
+
             return result, conversation  # Break loop if execution is successful
         except Exception as e:
             error_description = str(e)
@@ -27,11 +32,19 @@ def generate_result_with_error_handling(conversation: List[dict[str:str]],
             new_message = f"Executing your code led to an error! Please update the model to fix the error. Make sure" \
                           f" to save the updated final model is the variable 'final_model'. This is the error" \
                           f" message: {error_description}"
-            print(new_message)
             conversation.append({"role": "user", "content": new_message})
+
+        print_conversation(conversation)
 
     raise Exception(openai_model + " failed to fix the errors after " + str(max_iterations) +
                     " iterations! This is the error history: " + str(error_history))
+
+
+def print_conversation(conversation):
+    print("\n\n")
+    for index, msg in enumerate(conversation):
+        print("\t%d: %s" % (index, str(msg).replace("\n", " ").replace("\r", " ")))
+    print("\n\n")
 
 
 def generate_response_with_history(conversation_history, api_key, openai_model, api_url) -> str:
