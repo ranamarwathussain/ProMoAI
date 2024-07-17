@@ -24,6 +24,9 @@ class ModelGenerator:
     def activity(self, label):
         return Transition(label)
 
+    def silent_transition(self):
+        return SilentTransition()
+
     def create_model(self, node: POWL, parent_type):
         if node is None:
             res = SilentTransition()
