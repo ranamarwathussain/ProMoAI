@@ -1,5 +1,4 @@
 import sys
-from sys import maxsize
 
 
 ENABLE_PRINTS = True
