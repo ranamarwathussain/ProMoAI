@@ -4,6 +4,7 @@ from utils import llm_model_generator
 def execute_script():
     obj = llm_model_generator.initialize(process_description="A then B then C", api_key=open("api_key.txt", "r").read(), openai_model="gpt-4o")
     print(obj.grade_process_model())
+    obj.view_bpmn("svg")
 
 
 if __name__ == "__main__":
