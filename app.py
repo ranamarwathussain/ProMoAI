@@ -3,7 +3,7 @@ import subprocess
 import streamlit as st
 import textwrap 
 
-from utils import LLMProcessModelGenerator
+from utils import llm_model_generator
 from pm4py.objects.conversion.powl.variants.to_petri_net import apply as powl_to_pn
 
 from pm4py.util import constants
@@ -41,7 +41,7 @@ def run_app():
 
     if submit_button:
         try:
-            st.session_state['model_gen'] = LLMProcessModelGenerator(description, api_key, open_ai_model)
+            st.session_state['model_gen'] = llm_model_generator.initialize(description, api_key, open_ai_model)
             st.session_state['feedback'] = []
         except Exception as e:
             st.error(body=str(e), icon="⚠️")

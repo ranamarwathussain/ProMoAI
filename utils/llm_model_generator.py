@@ -104,3 +104,8 @@ class LLMProcessModelGenerator(object):
         if numbers:
             return float(numbers[0])
         return 0.0
+
+
+def initialize(process_description: str, api_key: str,
+                 openai_model: str = "gpt-3.5-turbo-0125", api_url: str = "https://api.openai.com/v1", powl_model_code: str = None):
+    return LLMProcessModelGenerator(process_description=process_description, api_key=api_key, openai_model=openai_model, api_url=api_url, powl_model_code=powl_model_code)
