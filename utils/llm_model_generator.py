@@ -1,6 +1,9 @@
 from utils.prompting import create_conversation, update_conversation
 from utils.model_generation.model_generation import generate_model, extract_model_from_response
+from utils.general_utils import openai_connection
 from pm4py.util import constants
+from copy import copy
+import re
 
 
 class LLMProcessModelGenerator(object):
@@ -90,3 +93,14 @@ class LLMProcessModelGenerator(object):
                              final_marking=fm,
                              output_filename=file_path,
                              parameters={"encoding": encoding})
+
+    def grade_process_model(self):
+        conversation = copy(self.__conversation)
+        conversation.append({"role": "user", "content": "Could you provide a grade from 1.0 to 10.0 to the provided process model? Please explain briefly your motivations."})
+        response = openai_connection.generate_response_with_history(conversation, self.__api_key, self.__openai_model, self.__api_url)
+        pattern = r'\d+'
+        reg_expr = re.compile(pattern)
+        numbers = reg_expr.findall(response)
+        if numbers:
+            return float(numbers[0])
+        return 0.0
