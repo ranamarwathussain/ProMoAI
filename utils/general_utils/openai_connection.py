@@ -1,5 +1,5 @@
 from typing import Callable, List, TypeVar, Any
-from utils import constants
+from utils import constants, shared
 import requests
 import sys
 
@@ -18,6 +18,8 @@ def generate_result_with_error_handling(conversation: List[dict[str:str]],
     print_conversation(conversation)
 
     for iteration in range(max_iterations):
+        shared.LAST_ITERATIONS = iteration+1
+
         response = generate_response_with_history(conversation, api_key, openai_model, api_url)
 
         try:
