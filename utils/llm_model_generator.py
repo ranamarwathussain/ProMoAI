@@ -3,37 +3,38 @@ from utils.model_generation.model_generation import generate_model, extract_mode
 from utils.general_utils import openai_connection
 from pm4py.util import constants
 from copy import copy, deepcopy
+from typing import Optional
 import re
 
 
 class LLMProcessModelGenerator(object):
-    def __init__(self, process_description: str, api_key: str,
+    def __init__(self, process_description: Optional[str], api_key: str,
                  openai_model: str = "gpt-3.5-turbo-0125", api_url: str = "https://api.openai.com/v1", powl_model_code: str = None):
-        self.__api_url = api_url
-        self.__api_key = api_key
-        self.__openai_model = openai_model
+        self.api_url = api_url
+        self.api_key = api_key
+        self.openai_model = openai_model
         init_conversation = create_conversation(process_description)
         if process_description is not None:
-            self.__process_model, self.__conversation = generate_model(init_conversation,
-                                                                       api_key=self.__api_key,
-                                                                       openai_model=self.__openai_model,
-                                                                       api_url=self.__api_url)
+            self.process_model, self.conversation = generate_model(init_conversation,
+                                                                   api_key=self.api_key,
+                                                                   openai_model=self.openai_model,
+                                                                   api_url=self.api_url)
         elif powl_model_code:
             process_model = extract_model_from_response(powl_model_code, 0)
             conversation = list(init_conversation)
             conversation.append({"role": "assistant", "content": "The following code is used to generate the process model:\n\n"+powl_model_code})
-            self.__process_model = process_model
-            self.__conversation = conversation
+            self.process_model = process_model
+            self.conversation = conversation
         else:
             raise Exception("insufficient parameters provided to LLMProcessModelGenerator. at least one between 'process_description' and 'powl_model_code' should be provided.")
 
     def __to_petri_net(self):
         from pm4py.objects.conversion.powl.converter import apply as powl_to_pn
-        net, im, fm = powl_to_pn(self.__process_model)
+        net, im, fm = powl_to_pn(self.process_model)
         return net, im, fm
 
     def get_powl(self):
-        return self.__process_model
+        return self.process_model
 
     def get_bpmn(self):
         net, im, fm = self.__to_petri_net()
@@ -44,11 +45,11 @@ class LLMProcessModelGenerator(object):
         return bpmn_model
 
     def update(self, feedback: str):
-        self.__conversation = update_conversation(self.__conversation, feedback)
-        self.__process_model, self.__conversation = generate_model(conversation=self.__conversation,
-                                                                   api_key=self.__api_key,
-                                                                   openai_model=self.__openai_model,
-                                                                   api_url=self.__api_url)
+        self.conversation = update_conversation(self.conversation, feedback)
+        self.process_model, self.conversation = generate_model(conversation=self.conversation,
+                                                               api_key=self.api_key,
+                                                               openai_model=self.openai_model,
+                                                               api_url=self.api_url)
 
     def view_bpmn(self, image_format: str = "svg"):
         bpmn_model = self.get_bpmn()
@@ -72,7 +73,7 @@ class LLMProcessModelGenerator(object):
         image_format = str(image_format).lower()
         from pm4py.visualization.powl import visualizer as powl_visualizer
         parameters = powl_visualizer.POWLVisualizationVariants.BASIC.value.Parameters
-        visualization = powl_visualizer.apply(self.__process_model,
+        visualization = powl_visualizer.apply(self.process_model,
                                               parameters={parameters.FORMAT: image_format})
         powl_visualizer.view(visualization)
 
@@ -95,9 +96,9 @@ class LLMProcessModelGenerator(object):
                              parameters={"encoding": encoding})
 
     def grade_process_model(self):
-        conversation = copy(self.__conversation)
+        conversation = copy(self.conversation)
         conversation.append({"role": "user", "content": "Could you provide a grade from 1.0 to 10.0 to the provided process model? Please explain briefly your motivations."})
-        response = openai_connection.generate_response_with_history(conversation, self.__api_key, self.__openai_model, self.__api_url)
+        response = openai_connection.generate_response_with_history(conversation, self.api_key, self.openai_model, self.api_url)
         pattern = r'\d+'
         reg_expr = re.compile(pattern)
         numbers = reg_expr.findall(response)
