@@ -1,6 +1,7 @@
 from typing import Callable, List, TypeVar, Any
 from utils import constants
 import requests
+import sys
 
 T = TypeVar('T')
 
@@ -75,6 +76,9 @@ def generate_response_with_history(conversation_history, api_key, openai_model, 
         "model": openai_model,
         "messages": messages_payload
     }
+
+    if constants.MAX_TOKENS < sys.maxsize:
+        payload["max_tokens"] = constants.MAX_TOKENS
 
     if api_url.endswith("/"):
         api_url = api_url[:-1]
