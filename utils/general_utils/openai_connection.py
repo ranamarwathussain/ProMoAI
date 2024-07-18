@@ -1,4 +1,5 @@
 from typing import Callable, List, TypeVar, Any
+from utils import constants
 import requests
 
 T = TypeVar('T')
@@ -28,7 +29,8 @@ def generate_result_with_error_handling(conversation: List[dict[str:str]],
         except Exception as e:
             error_description = str(e)
             error_history.append(error_description)
-            print("Error detected in iteration " + str(iteration + 1))
+            if constants.ENABLE_PRINTS:
+                print("Error detected in iteration " + str(iteration + 1))
             new_message = f"Executing your code led to an error! Please update the model to fix the error. Make sure" \
                           f" to save the updated final model is the variable 'final_model'. This is the error" \
                           f" message: {error_description}"
@@ -41,10 +43,11 @@ def generate_result_with_error_handling(conversation: List[dict[str:str]],
 
 
 def print_conversation(conversation):
-    print("\n\n")
-    for index, msg in enumerate(conversation):
-        print("\t%d: %s" % (index, str(msg).replace("\n", " ").replace("\r", " ")))
-    print("\n\n")
+    if constants.ENABLE_PRINTS:
+        print("\n\n")
+        for index, msg in enumerate(conversation):
+            print("\t%d: %s" % (index, str(msg).replace("\n", " ").replace("\r", " ")))
+        print("\n\n")
 
 
 def generate_response_with_history(conversation_history, api_key, openai_model, api_url) -> str:
