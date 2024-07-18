@@ -4,6 +4,7 @@ import streamlit as st
 import textwrap 
 
 from utils import llm_model_generator
+from utils.general_utils import improve_descr
 from pm4py.objects.conversion.powl.variants.to_petri_net import apply as powl_to_pn
 
 from pm4py.util import constants
@@ -37,11 +38,30 @@ def run_app():
             api_key = st.text_input("Enter your OpenAI API key:", type="password")
 
         description = st.text_area("Enter the process description:")
+
+        with st.expander("Show optional settings"):
+            api_url = st.text_input(
+                "Enter the API URL (optional):",
+                value="https://api.openai.com/v1",
+                help="Specify the API URL if needed."
+            )
+            self_improvement = st.checkbox(
+                "Enable self-improvement of the input prompt",
+                value=False
+            )
+            num_candidates = st.number_input(
+                "Number of different candidates to consider (>=1):",
+                min_value=1,
+                value=1
+            )
+
         submit_button = st.form_submit_button(label='Run')
 
     if submit_button:
         try:
-            st.session_state['model_gen'] = llm_model_generator.initialize(description, api_key, open_ai_model)
+            if self_improvement:
+                description = improve_descr.improve_process_description(description, api_key=api_key, openai_model=open_ai_model, api_url=api_url)
+            st.session_state['model_gen'] = llm_model_generator.initialize(description, api_key, open_ai_model, api_url=api_url, n_candidates=num_candidates)
             st.session_state['feedback'] = []
         except Exception as e:
             st.error(body=str(e), icon="⚠️")
@@ -60,7 +80,7 @@ def run_app():
                     feedback = st.text_area("Feedback:", value="")
                     if st.form_submit_button(label='Update Model'):
                         try:
-                            st.session_state['model_gen'] = llm_model_generator.update(st.session_state['model_gen'], feedback)
+                            st.session_state['model_gen'] = llm_model_generator.update(st.session_state['model_gen'], feedback, n_candidates=num_candidates)
                         except Exception as e:
                             raise Exception("Update failed! " + str(e))
                         st.session_state['feedback'].append(feedback)
