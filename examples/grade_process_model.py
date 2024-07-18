@@ -1,4 +1,4 @@
-from utils import llm_model_generator
+from utils import llm_model_generator, shared
 
 
 def execute_script():
@@ -10,6 +10,7 @@ def execute_script():
 
     obj = llm_model_generator.initialize(process_description=proc_descr, api_key=api_key, openai_model=openai_model, api_url=api_url, n_candidates=n_candidates)
     print(obj.grade_process_model())
+    print("Number of required iterations:", str(shared.LAST_ITERATIONS))
     obj.view_bpmn("svg")
 
 
