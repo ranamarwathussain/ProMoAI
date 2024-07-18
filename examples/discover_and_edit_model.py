@@ -13,7 +13,8 @@ def execute_script():
     process_tree = pm4py.discover_process_tree_inductive(log)
     powl_code = pt_to_powl_code.recursively_transform_process_tree(process_tree)
     obj = llm_model_generator.initialize(None, api_key=api_key,
-                                   powl_model_code=powl_code, openai_model=openai_model)
+                                   powl_model_code=powl_code, openai_model=openai_model,
+                                         api_url=api_url)
     obj = llm_model_generator.update(obj, feedback)
     obj.view_bpmn("svg")
 
