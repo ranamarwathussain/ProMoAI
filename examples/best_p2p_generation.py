@@ -5,8 +5,8 @@ from utils.general_utils import improve_descr
 def execute_script():
     proc_descr = "please model a Purchase-to-Pay process."
     feedback = "Please improve the process model"
-    api_key = open("api_key.txt", "r").read()
-    openai_model = "gpt-3.5-turbo"
+    api_key = open("api_key.txt", "r").read().strip()
+    openai_model = open("api_model.txt", "r").read().strip()
     n_candidates = 2
 
     # improve the process description

@@ -4,8 +4,8 @@ from utils.general_utils import pt_to_powl_code
 
 
 def execute_script():
-    api_key = open("api_key.txt", "r").read()
-    openai_model = "gpt-4o"
+    api_key = open("api_key.txt", "r").read().strip()
+    openai_model = open("api_model.txt", "r").read().strip()
     feedback = "Can you add an activity Throw Chair in the end"
 
     bpmn_graph = pm4py.read_bpmn("running-example.bpmn")
