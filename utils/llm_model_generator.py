@@ -2,7 +2,7 @@ from utils.prompting import create_conversation, update_conversation
 from utils.model_generation.model_generation import generate_model, extract_model_from_response
 from utils.general_utils import openai_connection
 from pm4py.util import constants
-from copy import copy
+from copy import copy, deepcopy
 import re
 
 
@@ -107,10 +107,32 @@ class LLMProcessModelGenerator(object):
 
 
 def initialize(process_description: str, api_key: str,
-                 openai_model: str = "gpt-3.5-turbo-0125", api_url: str = "https://api.openai.com/v1", powl_model_code: str = None):
-    return LLMProcessModelGenerator(process_description=process_description, api_key=api_key, openai_model=openai_model, api_url=api_url, powl_model_code=powl_model_code)
+                 openai_model: str = "gpt-3.5-turbo-0125", api_url: str = "https://api.openai.com/v1", powl_model_code: str = None, n_candidates: int = 1):
+    best_grade = -1.0
+    best_cand = None
+    for i in range(n_candidates):
+        cand = LLMProcessModelGenerator(process_description=process_description, api_key=api_key, openai_model=openai_model, api_url=api_url, powl_model_code=powl_model_code)
+        if n_candidates > 1:
+            grade = cand.grade_process_model()
+            if grade > best_grade:
+                best_grade = grade
+                best_cand = cand
+        else:
+            best_cand = cand
+    return best_cand
 
 
-def update(generator: LLMProcessModelGenerator, feedback: str):
-    generator.update(feedback)
-    return generator
+def update(generator: LLMProcessModelGenerator, feedback: str, n_candidates: int = 1):
+    best_grade = -1.0
+    best_cand = None
+    for i in range(n_candidates):
+        cand = generator if n_candidates == 1 else deepcopy(generator)
+        cand.update(feedback)
+        if n_candidates > 1:
+            grade = cand.grade_process_model()
+            if grade > best_grade:
+                best_grade = grade
+                best_cand = cand
+        else:
+            best_cand = cand
+    return best_cand
