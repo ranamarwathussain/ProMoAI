@@ -4,6 +4,7 @@ from utils.general_utils import pt_to_powl_code
 
 
 def execute_script():
+    api_url = open("api_url.txt", "r").read().strip()
     api_key = open("api_key.txt", "r").read().strip()
     openai_model = open("api_model.txt", "r").read().strip()
     feedback = "Can you add an activity Explode Bomb in the end"
