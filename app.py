@@ -60,7 +60,7 @@ def run_app():
                     feedback = st.text_area("Feedback:", value="")
                     if st.form_submit_button(label='Update Model'):
                         try:
-                            st.session_state['model_gen'].update(feedback)
+                            st.session_state['model_gen'] = llm_model_generator.update(st.session_state['model_gen'], feedback)
                         except Exception as e:
                             raise Exception("Update failed! " + str(e))
                         st.session_state['feedback'].append(feedback)
