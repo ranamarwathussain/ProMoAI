@@ -116,11 +116,11 @@ def initialize(process_description: str, api_key: str,
             cand = LLMProcessModelGenerator(process_description=process_description, api_key=api_key, openai_model=openai_model, api_url=api_url, powl_model_code=powl_model_code)
             if n_candidates > 1:
                 grade = cand.grade_process_model()
-                if debug:
-                    print("i=%d n_candidates=%d grade=%.2f best_grade=%.2f" % (i, n_candidates, grade, best_grade))
                 if grade > best_grade:
                     best_grade = grade
                     best_cand = cand
+                if debug:
+                    print("i=%d n_candidates=%d grade=%.2f best_grade=%.2f" % (i, n_candidates, grade, best_grade))
             else:
                 best_cand = cand
         except Exception as e:
@@ -140,11 +140,11 @@ def update(generator: LLMProcessModelGenerator, feedback: str, n_candidates: int
             cand.update(feedback)
             if n_candidates > 1:
                 grade = cand.grade_process_model()
-                if debug:
-                    print("i=%d n_candidates=%d grade=%.2f best_grade=%.2f" % (i, n_candidates, grade, best_grade))
                 if grade > best_grade:
                     best_grade = grade
                     best_cand = cand
+                if debug:
+                    print("i=%d n_candidates=%d grade=%.2f best_grade=%.2f" % (i, n_candidates, grade, best_grade))
             else:
                 best_cand = cand
         except Exception as e:
