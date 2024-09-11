@@ -47,5 +47,5 @@ for fold in folders:
             except:
                 pass
 
-        break
-    break
+        #break
+    #break
