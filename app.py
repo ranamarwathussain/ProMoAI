@@ -31,7 +31,7 @@ def run_app():
         col1, col2 = st.columns(2)
 
         with col1:
-            open_ai_model = st.text_input("Enter the OpenAI model name:", value="gpt-4o",
+            open_ai_model = st.text_input("Enter the OpenAI model name:", value="gpt-4o-mini",
                                           help="You can check the latest models under: https://openai.com/pricing")
 
         with col2:
