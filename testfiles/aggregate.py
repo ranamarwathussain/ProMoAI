@@ -22,7 +22,7 @@ for file in os.listdir("results"):
         pi = file_split[3]
         mi = file_split[4]
 
-        if ite == str(n_candidates) and pi == improve_initial_prompt and mi == improve_resulting_model:
+        if model == openai_model and ite == str(n_candidates) and pi == improve_initial_prompt and mi == improve_resulting_model:
             contents = json.load(open(os.path.join("results", file), "r"))
             if cat not in agg_cat:
                 agg_cat[cat] = {"visible_transitions": [], "self_grading": [], "n_iterations": []}
