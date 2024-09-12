@@ -137,4 +137,4 @@ dmypy.json
 !testfiles/*/*.bpmn
 
 testfiles/api*.txt
-testfiles/results/*
+!testfiles/results/*
