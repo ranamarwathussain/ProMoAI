@@ -134,6 +134,7 @@ dmypy.json
 !testfiles/*.txt
 !testfiles/*/*.py
 !testfiles/*/*.txt
+!testfiles/*/*.bpmn
 
 testfiles/api*.txt
 testfiles/results/*
