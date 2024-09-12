@@ -1,6 +1,6 @@
 import os
 
-FOLDER = "long"
+FOLDER = "short"
 
 for proc in os.listdir(FOLDER):
     proc_path = os.path.join(FOLDER, proc)
