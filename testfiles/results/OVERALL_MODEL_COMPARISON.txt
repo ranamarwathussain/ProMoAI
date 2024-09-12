@@ -19,3 +19,8 @@ long visible_transitions 10.2 pm 2.0 	self_grading 5.3 pm 2.7 	n_iterations 2.7 
 medium visible_transitions 6.1 pm 1.4 	self_grading 6.7 pm 1.9 	n_iterations 2.0 pm 1.0
 short visible_transitions 11.3 pm 5.0 	self_grading 6.5 pm 2.3 	n_iterations 2.7 pm 0.7
 
+mistralai/Mixtral-8x22B-Instruct-v0.1:
+
+long visible_transitions 10.7 pm 1.6 	self_grading 7.8 pm 1.7 	n_iterations 2.7 pm 0.7
+medium visible_transitions 6.9 pm 1.9 	self_grading 8.4 pm 3.1 	n_iterations 2.2 pm 0.9
+short visible_transitions 7.5 pm 2.6 	self_grading 5.2 pm 3.4 	n_iterations 2.7 pm 0.7
