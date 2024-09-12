@@ -29,7 +29,7 @@ for fold in folders:
                                                      api_url=api_url, n_candidates=n_candidates, debug=False)
 
                 if improve_resulting_model == "1":
-                    feedback = "Please improve the process model"
+                    feedback = "Please improve the process model. For example, typical improvement steps include additional activities, managing a greater number of exceptions, or increasing the concurrency in the execution of the process."
 
                     obj = llm_model_generator.update(obj, feedback, n_candidates=n_candidates, debug=False)
 
@@ -37,9 +37,9 @@ for fold in folders:
                 net, im, fm = pm4py.convert_to_petri_net(powl)
                 visible_transitions = [x for x in net.transitions if x.label is not None]
 
-                reachability_graph = pm4py.convert_to_reachability_graph(net, im, fm)
+                #reachability_graph = pm4py.convert_to_reachability_graph(net, im, fm)
 
-                dictio = {"visible_transitions": len(visible_transitions), "states_reachability_graph": len(reachability_graph.states), "n_iterations": shared.LAST_ITERATIONS, "self_grading": obj.grade_process_model()}
+                dictio = {"visible_transitions": len(visible_transitions), "n_iterations": shared.LAST_ITERATIONS, "self_grading": obj.grade_process_model()}
 
                 F = open(output_file, "w")
                 json.dump(dictio, F)
