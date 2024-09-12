@@ -8,8 +8,6 @@ api_url = open("api_url.txt", "r").read().strip()
 api_key = open("api_key.txt", "r").read().strip()
 openai_model = open("api_model.txt", "r").read().strip()
 
-feedback = "Please improve the process model. For example, typical improvement steps include additional activities, managing a greater number of exceptions, or increasing the concurrency in the execution of the process."
-
 for bpmn_file in os.listdir("bpmn"):
     print("\n\n")
     print(bpmn_file)
@@ -22,16 +20,12 @@ for bpmn_file in os.listdir("bpmn"):
     num_visible = len([x for x in net.transitions if x.label is not None])
     log = pm4py.read_xes(os.path.join("xes", xes_file), return_legacy_log_object=True)
 
-    fitness_tbr = pm4py.fitness_token_based_replay(log, net, im, fm)["log_fitness"]
-    precision_tbr = pm4py.precision_token_based_replay(log, net, im, fm)
-
     powl_code = pt_to_powl_code.recursively_transform_process_tree(process_tree)
 
     obj = llm_model_generator.initialize(None, api_key=api_key,
                                          powl_model_code=powl_code, openai_model=openai_model, api_url=api_url, debug=False)
 
-    grade = obj.grade_process_model()
-    print("fitness1", fitness_tbr, "\tprecision1", precision_tbr, "\tgrade1", grade, "\tnum_visible1", num_visible)
+    feedback = "These are the process variants of the log, any suggested improvement to the model?\n\n"+pm4py.llm.abstract_variants(log, response_header=False)
 
     obj = llm_model_generator.update(obj, feedback, debug=False)
     grade2 = obj.grade_process_model()
