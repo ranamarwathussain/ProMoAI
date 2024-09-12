@@ -3,7 +3,9 @@ import json
 import numpy as np
 
 TARGET_MODEL = "gpt-4o-mini"
-X_CATEGORY = "visible_transitions"
+X_CATEGORY = "n_iterations"
+
+TARGET_MODEL = TARGET_MODEL.strip().replace("/", "").replace(":", "").strip()
 
 rrr = {}
 

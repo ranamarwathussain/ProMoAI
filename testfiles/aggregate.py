@@ -5,7 +5,7 @@ import numpy as np
 
 api_url = open("api_url.txt", "r").read().strip()
 api_key = open("api_key.txt", "r").read().strip()
-openai_model = open("api_model.txt", "r").read().strip()
+openai_model = open("api_model.txt", "r").read().strip().replace("/", "").replace(":", "").strip()
 n_candidates = 1
 improve_initial_prompt = "0"
 improve_resulting_model = "0"
