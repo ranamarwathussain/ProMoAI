@@ -45,8 +45,12 @@ def run_app():
                 value="https://api.openai.com/v1",
                 help="Specify the API URL if needed."
             )
-            self_improvement = st.checkbox(
+            prompt_improvement = st.checkbox(
                 "Enable self-improvement of the input prompt",
+                value=False
+            )
+            model_improvement = st.checkbox(
+                "Enable self-improvement of the generated model",
                 value=False
             )
             num_candidates = st.number_input(
@@ -59,9 +63,17 @@ def run_app():
 
     if submit_button:
         try:
-            if self_improvement:
+            if prompt_improvement:
                 description = improve_descr.improve_process_description(description, api_key=api_key, openai_model=open_ai_model, api_url=api_url)
-            st.session_state['model_gen'] = llm_model_generator.initialize(description, api_key, open_ai_model, api_url=api_url, n_candidates=num_candidates)
+
+            obj = llm_model_generator.initialize(description, api_key, open_ai_model, api_url=api_url,
+                                           n_candidates=num_candidates)
+
+            if model_improvement:
+                feedback = "Please improve the process model. For example, typical improvement steps include additional activities, managing a greater number of exceptions, or increasing the concurrency in the execution of the process."
+                obj = llm_model_generator.update(obj, feedback, n_candidates=num_candidates)
+
+            st.session_state['model_gen'] = obj
             st.session_state['feedback'] = []
         except Exception as e:
             st.error(body=str(e), icon="⚠️")
