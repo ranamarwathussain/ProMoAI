@@ -42,7 +42,7 @@ def run_app():
 
         description = st.text_area("For **process modeling**, enter the process description:")
 
-        with st.expander("Show optional settings for process modeling"):
+        with st.expander("Show optional settings"):
             api_url = st.text_input(
                 "Enter the API URL (optional):",
                 value="https://api.openai.com/v1",
