@@ -40,7 +40,7 @@ def run_app():
         with col2:
             api_key = st.text_input("Enter your OpenAI API key:", type="password")
 
-        description = st.text_area("Enter the process description:")
+        description = st.text_area("For **process modeling**, enter the process description:")
 
         with st.expander("Show optional settings for process modeling"):
             api_url = st.text_input(
@@ -62,7 +62,7 @@ def run_app():
                 value=1
             )
 
-        uploaded_file = st.file_uploader("In alternative, upload a block-structured BPMN 2.0 XML",
+        uploaded_file = st.file_uploader("For **process model re-design**, upload a block-structured BPMN 2.0 XML",
                                          type=["bpmn"],
                                          help="Block-structured workflow.")
 
