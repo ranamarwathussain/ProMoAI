@@ -1,7 +1,8 @@
 import subprocess
 
 import streamlit as st
-import textwrap 
+import textwrap
+import pm4py
 
 from utils import llm_model_generator
 from utils.general_utils import improve_descr
@@ -14,6 +15,8 @@ from pm4py.visualization.bpmn import visualizer as bpmn_visualizer
 from pm4py.objects.conversion.wf_net.variants.to_bpmn import apply as pn_to_bpmn
 from pm4py.objects.bpmn.layout import layouter
 from pm4py.objects.bpmn.exporter.variants.etree import get_xml_string
+from utils.general_utils import pt_to_powl_code
+from tempfile import NamedTemporaryFile
 
 
 def run_model_generator_app():
@@ -39,7 +42,7 @@ def run_app():
 
         description = st.text_area("Enter the process description:")
 
-        with st.expander("Show optional settings"):
+        with st.expander("Show optional settings for process modeling"):
             api_url = st.text_input(
                 "Enter the API URL (optional):",
                 value="https://api.openai.com/v1",
@@ -59,25 +62,44 @@ def run_app():
                 value=1
             )
 
+        uploaded_file = st.file_uploader("In alternative, upload a block-structured BPMN 2.0 XML",
+                                         type=["bpmn"],
+                                         help="Block-structured workflow.")
+
         submit_button = st.form_submit_button(label='Run')
 
     if submit_button:
-        try:
-            if prompt_improvement:
-                description = improve_descr.improve_process_description(description, api_key=api_key, openai_model=open_ai_model, api_url=api_url)
+        if uploaded_file is not None:
+            contents = uploaded_file.read()
+            F = open("temp.bpmn", "wb")
+            F.write(contents)
+            F.close()
 
-            obj = llm_model_generator.initialize(description, api_key, open_ai_model, api_url=api_url,
-                                           n_candidates=num_candidates)
-
-            if model_improvement:
-                feedback = "Please improve the process model. For example, typical improvement steps include additional activities, managing a greater number of exceptions, or increasing the concurrency in the execution of the process."
-                obj = llm_model_generator.update(obj, feedback, n_candidates=num_candidates)
-
+            bpmn_graph = pm4py.read_bpmn("temp.bpmn")
+            process_tree = pm4py.convert_to_process_tree(bpmn_graph)
+            powl_code = pt_to_powl_code.recursively_transform_process_tree(process_tree)
+            obj = llm_model_generator.initialize(None, api_key=api_key,
+                                                 powl_model_code=powl_code, openai_model=open_ai_model, api_url=api_url,
+                                                 debug=False)
             st.session_state['model_gen'] = obj
             st.session_state['feedback'] = []
-        except Exception as e:
-            st.error(body=str(e), icon="⚠️")
-            return
+        else:
+            try:
+                if prompt_improvement:
+                    description = improve_descr.improve_process_description(description, api_key=api_key, openai_model=open_ai_model, api_url=api_url)
+
+                obj = llm_model_generator.initialize(description, api_key, open_ai_model, api_url=api_url,
+                                               n_candidates=num_candidates)
+
+                if model_improvement:
+                    feedback = "Please improve the process model. For example, typical improvement steps include additional activities, managing a greater number of exceptions, or increasing the concurrency in the execution of the process."
+                    obj = llm_model_generator.update(obj, feedback, n_candidates=num_candidates)
+
+                st.session_state['model_gen'] = obj
+                st.session_state['feedback'] = []
+            except Exception as e:
+                st.error(body=str(e), icon="⚠️")
+                return
 
     if 'model_gen' in st.session_state and st.session_state['model_gen']:
 
