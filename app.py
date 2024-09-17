@@ -70,19 +70,23 @@ def run_app():
 
     if submit_button:
         if uploaded_file is not None:
-            contents = uploaded_file.read()
-            F = open("temp.bpmn", "wb")
-            F.write(contents)
-            F.close()
+            try:
+                contents = uploaded_file.read()
+                F = open("temp.bpmn", "wb")
+                F.write(contents)
+                F.close()
 
-            bpmn_graph = pm4py.read_bpmn("temp.bpmn")
-            process_tree = pm4py.convert_to_process_tree(bpmn_graph)
-            powl_code = pt_to_powl_code.recursively_transform_process_tree(process_tree)
-            obj = llm_model_generator.initialize(None, api_key=api_key,
-                                                 powl_model_code=powl_code, openai_model=open_ai_model, api_url=api_url,
-                                                 debug=False)
-            st.session_state['model_gen'] = obj
-            st.session_state['feedback'] = []
+                bpmn_graph = pm4py.read_bpmn("temp.bpmn")
+                process_tree = pm4py.convert_to_process_tree(bpmn_graph)
+                powl_code = pt_to_powl_code.recursively_transform_process_tree(process_tree)
+                obj = llm_model_generator.initialize(None, api_key=api_key,
+                                                     powl_model_code=powl_code, openai_model=open_ai_model, api_url=api_url,
+                                                     debug=False)
+                st.session_state['model_gen'] = obj
+                st.session_state['feedback'] = []
+            except Exception as e:
+                st.error(body="Please upload a block-structured workflow!", icon="⚠️")
+                return
         else:
             try:
                 if prompt_improvement:
